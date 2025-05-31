@@ -1,5 +1,3 @@
-# app.py
-
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -12,7 +10,7 @@ model = joblib.load('model.pkl')
 st.title("🧮 Prédiction de détention de compte bancaire")
 
 # Champs du formulaire
-country = st.selectbox("Pays", ['Kenya', 'Rwanda', 'Tanzania', 'Uganda'])  # adapter si besoin
+country = st.selectbox("Pays", ['Kenya', 'Rwanda', 'Tanzania', 'Uganda'])
 year = st.selectbox("Année", [2016, 2017, 2018])
 location_type = st.selectbox("Type de lieu", ['Rural', 'Urbain'])
 cellphone_access = st.selectbox("Accès à un téléphone portable", ['Oui', 'Non'])
@@ -31,7 +29,6 @@ job_type = st.selectbox("Type d'emploi", [
 ])
 
 # Encodeurs fictifs (les vrais doivent correspondre à ton LabelEncoder)
-# Remplace ces dictionnaires par les bons encodages après avoir imprimé ceux utilisés
 encoders = {
     'country': {'Kenya': 0, 'Rwanda': 1, 'Tanzania': 2, 'Uganda': 3},
     'location_type': {'Rural': 0, 'Urbain': 1},
@@ -76,11 +73,17 @@ input_data = pd.DataFrame([{
     'job_type': encoders['job_type'][job_type]
 }])
 
-# Bouton de prédiction
-if st.button("Prédire"):
-    prediction = model.predict(input_data)
-    if prediction[0] == 1:
-        st.success("✅ Cette personne est susceptible d'avoir un compte bancaire.")
-    else:
-        st.warning("❌ Cette personne n'est probablement pas détentrice d'un compte bancaire.")
+# Debug : afficher les colonnes et les données envoyées
+st.write("🧪 Colonnes envoyées au modèle :", input_data.columns.tolist())
+st.write("🧪 Données envoyées :", input_data)
 
+# Bouton de prédiction avec gestion d'erreur
+if st.button("Prédire"):
+    try:
+        prediction = model.predict(input_data)
+        if prediction[0] == 1:
+            st.success("✅ Cette personne est susceptible d'avoir un compte bancaire.")
+        else:
+            st.warning("❌ Cette personne n'est probablement pas détentrice d'un compte bancaire.")
+    except Exception as e:
+        st.error(f"🚨 Erreur pendant la prédiction : {e}")
